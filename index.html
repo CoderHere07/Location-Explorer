@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Location Explorer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Location Explorer</h1>
+            <select id="categoryFilter">
+                <option value="all">All</option>
+                <option value="park">Park</option>
+                <option value="cafe">Cafe</option>
+                <option value="museum">Museum</option>
+                <option value="restaurant">Restaurant</option>
+            </select>
+            <span id="status"></span>
+    </header>
+    <main id="list"></main>
+    <div id="sentinel" style="height: 10px;"></div>
+    <button id="toTop" hidden> TOP </button>
+    <script src="/src/main.js"></script>
+    
+</body>
+</html>
