@@ -1,8 +1,8 @@
-import { createPlace, PlaceProto, ParkProto} from './place.js';
-const place = createPlace("park", {id:1, name:"Jinnah Park", lat:31.52, lng:74.35});
-console.log(place.describe())
-console.log(Object.getPrototypeOf(place) === ParkProto);
-console.log(PlaceProto.isPrototypeOf(place));
-console.log(place.hasOwnProperty("describe"));
-console.log(place.hasOwnProperty("name"));
-console.log(typeof place.distanceFrom);
+import { PlaceStore } from "./store.js";
+const a = PlaceStore.getInstance();
+const b = PlaceStore.getInstance();
+console.log(a === b);
+
+a.reset({ lat: 31.52, lng: 74.35 });
+console.log(a.loadMore(5).length);
+console.log(b.getAll().length);
