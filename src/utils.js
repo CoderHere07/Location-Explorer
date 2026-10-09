@@ -8,3 +8,22 @@ export function distanceKm(lat1, lng1, lat2, lng2) {
     Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
+
+export function throttle(fn, limit = 200) {
+  let last = 0;
+  let timer = null;
+  return function (...args) {
+    const now = Date.now();
+    const remaining = limit - (now - last);
+    if (remaining <= 0) {
+      last = now;
+      fn.apply(this, args);
+    } else {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        last = Date.now();
+        fn.apply(this, args);
+      }, remaining);
+    }
+  };
+}
