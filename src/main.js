@@ -82,8 +82,8 @@ toTop.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smoot
 
 // Start
 (async function init() {
-  statusEl.textContent = "Location dhoond rahe hain…";
+  statusEl.textContent = "Location Finding…";
   center = await getLocation();
-  statusEl.textContent = center.fallback ? "Default location (Lahore)" : "Aapki location mil gayi ✅";
+  statusEl.textContent = center.fallback ? "Default location (Lahore)" : "I got your location";
   resetList();
 })();
