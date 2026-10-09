@@ -2,6 +2,7 @@ import { createPlace, PlaceProto, ParkProto} from './place.js';
 import { PlaceStore } from "./store.js";
 import { withLogging } from "./proxy.js";
 import { markVisited, isVisited } from "./cache.js";
+import { filterByCategory,  filterByRadius, sortByDistance, pipe } from './filters.js';
 
 const place = createPlace("park", {id:1, name:"Jinnah Park", lat:31.52, lng:74.35});
 console.log(place.describe())
@@ -32,3 +33,15 @@ logged.describe();
 markVisited(raw);
 console.log(isVisited(raw));
 console.log(isVisited(logged));
+
+
+const center = { lat: 31.52, lng: 74.35 };
+
+a.reset(center);
+const batch = a.loadMore(20);
+const parks = filterByCategory("park");
+console.log(parks(batch));
+console.log(filterByCategory("cafe")(batch));
+
+const nearbyParks = pipe(filterByCategory("park"), filterByRadius(3)(center));
+console.log(nearbyParks(batch));
