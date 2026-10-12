@@ -22,8 +22,13 @@ CafeProto.describe = function(){
 
 
 export const MuseumProto = Object.create(PlaceProto);
+MuseumProto.describe = function(){
+    return `${PlaceProto.describe.call(this)}, open till 6pm`;
+}
 export const RestaurantProto = Object.create(PlaceProto);
-
+RestaurantProto.describe = function(){
+    return `${PlaceProto.describe.call(this)}, open till 12am`;
+}
 
 const protoMap = {
     park: ParkProto,
