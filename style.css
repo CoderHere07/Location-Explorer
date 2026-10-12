@@ -1,54 +1,77 @@
+* {
+    box-sizing: border-box;
+}
+
 body {
-    font-family: system-ui,
-    sans-serif;
-    margin: 0; 
-    background: #b1bcc7; 
+    font-family: system-ui, sans-serif;
+    margin: 0;
+    background: #b1bcc7;
+    min-height: 100vh;
 }
+
 header {
-    position: sticky; 
-    top: 0; 
-    background: #6f9dd5; 
-    padding: 12px 16px; 
-    display: flex; 
-    gap: 12px; 
-    align-items: center; 
-    z-index: 10; 
-    box-shadow: 0 1px 4px rgba(0,0,0,.1); 
+    position: sticky;
+    top: 0;
+    background: #6f9dd5;
+    padding: 12px 5%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
-main { 
-    max-width: 600px; 
-    margin: 16px auto; 
-    padding: 0 12px; 
-    display: grid; 
-    gap: 10px; 
+
+header h1 {
+    margin: 0;
+    font-size: clamp(18px, 3vw, 26px);
 }
-.card { 
-    background: #fff; 
-    padding: 14px; 
-    border-radius: 10px; 
-    cursor: pointer; 
-    border-left: 4px solid transparent; 
+
+header input,
+header button {
+    max-width: 100%;
 }
-.card.visited { 
-    border-left-color: #6f9dd5; 
-    opacity: .85; 
+
+main {
+    width: 100%;
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 0 16px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
 }
-#toTop { 
-    position: fixed; 
-    right: 16px; 
-    bottom: 16px; 
-    padding: 10px 14px; 
-    border: 0; 
-    border-radius: 999px; 
-    background: #6f9dd5; 
-    color: #fff; 
+
+.card {
+    background: #fff;
+    padding: 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    border-left: 4px solid transparent;
+    overflow-wrap: anywhere;
+    transition: transform 0.2s ease,
+                box-shadow 0.2s ease,
+                opacity 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.card.visited {
+    border-left-color: #6f9dd5;
+    opacity: 0.85;
 }
 
 #categoryFilter {
     appearance: none;
     -webkit-appearance: none;
 
+    width: auto;
     min-width: 150px;
+    max-width: 100%;
     padding: 12px 42px 12px 16px;
 
     font-family: inherit;
@@ -56,7 +79,7 @@ main {
     font-weight: 600;
     color: #185094;
 
-    background-color: #ffffff;
+    background-color: #fff;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' fill='none' stroke='%236366f1' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 14px center;
@@ -67,7 +90,6 @@ main {
 
     cursor: pointer;
     box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
-
     transition: all 0.25s ease;
 }
 
@@ -76,17 +98,112 @@ main {
     box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
 }
 
+#categoryFilter:focus-visible {
+    outline: 2px solid #185094;
+    outline-offset: 2px;
+}
 
 #categoryFilter option {
     padding: 12px;
-    background: #ffffff;
+    background: #fff;
     color: #3c4260;
     font-size: 14px;
 }
 
-@media (max-width: 650px) {
+#toTop {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    padding: 12px 16px;
+    border: 0;
+    border-radius: 999px;
+    background: #185094;
+    color: #fff;
+    cursor: pointer;
+    z-index: 20;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    transition: background 0.2s ease,
+                transform 0.2s ease;
+}
+
+#toTop:hover {
+    background: #123d73;
+    transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+    header {
+        padding: 12px 16px;
+    }
+
+    main {
+        max-width: 650px;
+        margin: 16px auto;
+        gap: 12px;
+    }
+
+    .card {
+        padding: 14px;
+    }
+}
+
+/* ===== Mobile ===== */
+@media (max-width: 480px) {
+    header {
+        gap: 10px;
+        padding: 12px;
+    }
+
+    header h1 {
+        width: 100%;
+        font-size: 20px;
+    }
+
     #categoryFilter {
         width: 100%;
         min-width: 0;
+    }
+
+    main {
+        padding: 0 12px;
+        margin: 12px auto;
+        gap: 10px;
+    }
+
+    .card {
+        padding: 12px;
+        border-radius: 8px;
+    }
+
+    #toTop {
+        right: 12px;
+        bottom: 12px;
+        padding: 10px 14px;
+    }
+}
+
+@media (max-width: 320px) {
+    main {
+        padding: 0 8px;
+    }
+
+    .card {
+        padding: 10px;
+    }
+
+    #toTop {
+        right: 8px;
+        bottom: 8px;
+        padding: 9px 12px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        transition: none !important;
+        animation: none !important;
     }
 }
