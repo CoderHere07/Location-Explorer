@@ -7,21 +7,26 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header>
-        <h1>📍 Location Explorer</h1>
-            <select id="categoryFilter">
-                <option value="all">All</option>
-                <option value="park">Park</option>
-                <option value="cafe">Cafe</option>
-                <option value="museum">Museum</option>
-                <option value="restaurant">Restaurant</option>
-            </select>
-            <span id="status"></span>
-    </header>
-    <main id="list"></main>
-    <div id="sentinel" style="height: 10px;"></div>
-    <button id="toTop" hidden> TOP </button>
-    <script type="module" src="/src/main.js"></script>
-    
+  <header class="topbar">
+    <div class="topbar-inner">
+      <h1>📍 Location <span>Explorer</span></h1>
+      <span id="status" class="status">Loading…</span>
+    </div>
+
+    <nav class="chips" id="chips">
+      <button class="chip active" data-category="all">All</button>
+      <button class="chip" data-category="park">🌳 Parks</button>
+      <button class="chip" data-category="cafe">☕ Cafes</button>
+      <button class="chip" data-category="museum">🏛️ Museums</button>
+      <button class="chip" data-category="restaurant">🍽️ Restaurants</button>
+    </nav>
+  </header>
+
+  <main id="list"></main>
+
+  <div id="sentinel" class="sentinel"><div class="spinner"></div></div>
+  <button id="toTop" aria-label="Back to top">↑</button>
+
+  <script type="module" src="src/main.js"></script>
 </body>
 </html>
