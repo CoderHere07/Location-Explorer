@@ -20,16 +20,19 @@
       <button class="chip" data-category="museum">🏛️ Museums</button>
       <button class="chip" data-category="restaurant">🍽️ Restaurants</button>
     </nav>
-        <div class="toolbar">
-      <label for="radius">📏 Radius</label>
-      <select id="radius">
-        <option value="1">1 km</option>
-        <option value="2">2 km</option>
-        <option value="3">3 km</option>
-        <option value="5" selected>5 km</option>
-        <option value="Infinity">All</option>
-      </select>
-      <span class="hint">Nearest first ↑</span>
+    <div class="toolbar">
+      <button id="nearbyBtn" class="chip" aria-pressed="false">📍 Nearby places</button>
+
+      <div class="radius-wrap" id="radiusWrap" hidden>
+        <label for="radius">Radius</label>
+        <select id="radius">
+          <option value="1">1 km</option>
+          <option value="2">2 km</option>
+          <option value="3">3 km</option>
+          <option value="5" selected>5 km</option>
+          <option value="Infinity">All</option>
+        </select>
+      </div>
     </div>
   </header>
 

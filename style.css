@@ -256,8 +256,10 @@ main {
   gap: 10px;
   font-size: 0.82rem;
 }
-.toolbar label { color: var(--muted); font-weight: 600; }
-.toolbar select {
+.radius-wrap { display: flex; align-items: center; gap: 8px; }
+.radius-wrap[hidden] { display: none; } /* display:flex "hidden" ko override na kare */
+.radius-wrap label { color: var(--muted); font-weight: 600; }
+.radius-wrap select {
   font: inherit;
   color: var(--text);
   background: var(--surface);
@@ -266,4 +268,3 @@ main {
   padding: 6px 12px;
   cursor: pointer;
 }
-.toolbar .hint { margin-left: auto; color: var(--muted); }

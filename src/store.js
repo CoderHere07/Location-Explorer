@@ -5,15 +5,22 @@ export const PlaceStore = (function () {
   let instance = null;
 
   function init() {
-    const places = [];
+    const places = []; // ab tak load hui places (current order me)
+    let pool = [];     // poori places, ek baar bani, kabhi mutate nahi hoti
     let gen = null;
 
     return {
-      
+      // Naya location milne par: pool banta hai, default order
       reset(center) {
         places.length = 0;
-        const sortedPool = sortByDistance(center)(generatePool(center));
-        gen = placeGenerator(sortedPool);
+        pool = generatePool(center);
+        gen = placeGenerator(pool);
+      },
+      // Order badalne par: wahi pool, naya generator. nearestFirst=true -> sortByDistance
+      reorder(center, nearestFirst) {
+        places.length = 0;
+        const ordered = nearestFirst ? sortByDistance(center)(pool) : pool;
+        gen = placeGenerator(ordered);
       },
       loadMore(n = 10) {
         const batch = [];

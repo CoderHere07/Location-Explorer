@@ -8,30 +8,37 @@ import { throttle } from "./utils.js";
 const PAGE_SIZE = 10;
 const ICONS = { park: "🌳", cafe: "☕", museum: "🏛️", restaurant: "🍽️" };
 
-// ---------- DOM ----------
+
 const listEl = document.getElementById("list");
 const sentinel = document.getElementById("sentinel");
 const statusEl = document.getElementById("status");
 const chipsEl = document.getElementById("chips");
+const nearbyBtn = document.getElementById("nearbyBtn");
+const radiusWrap = document.getElementById("radiusWrap");
 const radiusEl = document.getElementById("radius");
 const toTop = document.getElementById("toTop");
 
-// ---------- State ----------
-const store = PlaceStore.getInstance();
+
+const store = PlaceStore.getInstance(); 
 let center = null;
 let category = "all";
+let nearbyMode = false;
 let radiusKm = Number(radiusEl.value);
 let observer = null;
 let finished = false;
 let locationLabel = "Location dhoond rahe hain…";
 
-const buildView = () =>
-  pipe(
-    filterByCategory(category),
-    filterByRadius(radiusKm)(center),
-    sortByDistance(center)
-  );
 
+const buildView = () =>
+  nearbyMode
+    ? pipe(
+        filterByCategory(category),
+        filterByRadius(radiusKm)(center),
+        sortByDistance(center)
+      )
+    : filterByCategory(category);
+
+    
 function updateStatus() {
   const count = listEl.children.length;
   statusEl.textContent =
@@ -39,6 +46,7 @@ function updateStatus() {
       ? "😕 Koi place nahi mili"
       : `${locationLabel} · ${count}`;
 }
+
 
 function renderPlace(place) {
   const card = document.createElement("article");
@@ -70,6 +78,7 @@ function renderPlace(place) {
 
   listEl.appendChild(card);
 }
+
 
 function finish() {
   finished = true;
@@ -104,6 +113,7 @@ function startObserving() {
 
       loadNext();
 
+      
       if (!finished) {
         io.unobserve(sentinel);
         io.observe(sentinel);
@@ -137,6 +147,20 @@ chipsEl.addEventListener("click", (e) => {
     .forEach((c) => c.classList.toggle("active", c === chip));
 
   category = chip.dataset.category;
+  applyView();
+});
+
+
+nearbyBtn.addEventListener("click", () => {
+  nearbyMode = !nearbyMode;
+
+  nearbyBtn.classList.toggle("active", nearbyMode);
+  nearbyBtn.setAttribute("aria-pressed", String(nearbyMode));
+  radiusWrap.hidden = !nearbyMode;
+
+  radiusKm = Number(radiusEl.value);
+  store.reorder(center, nearbyMode); 
+  window.scrollTo({ top: 0 });
   applyView();
 });
 
