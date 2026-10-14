@@ -1,7 +1,7 @@
 import { PlaceStore } from "./store.js";
 import { getLocation } from "./geo.js";
 import { filterByCategory, filterByRadius, sortByDistance, pipe } from "./filters.js";
-import { markVisited, isVisited } from "./cache.js";
+import { markVisited, unmarkVisited, isVisited } from "./cache.js";
 import { withLogging } from "./proxy.js";
 import { throttle } from "./utils.js";
 
@@ -68,11 +68,19 @@ function renderPlace(place) {
     <span class="visited-tick">✓</span>`;
 
   card.addEventListener("click", () => {
-    markVisited(place);
-    card.classList.add("visited");
-
     const logged = withLogging(place);
-    logged.name = place.name.replace(" ✓", "") + " ✓";
+    const baseName = place.name.replace(" ✓", "");
+
+    if (isVisited(place)) {
+      unmarkVisited(place);
+      card.classList.remove("visited");
+      logged.name = baseName;
+    } else {
+      markVisited(place);
+      card.classList.add("visited");
+      logged.name = baseName + " ✓";
+    }
+
     card.querySelector("h3").textContent = place.name;
   });
 
