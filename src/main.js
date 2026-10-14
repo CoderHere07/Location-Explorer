@@ -1,6 +1,6 @@
 import { PlaceStore } from "./store.js";
 import { getLocation } from "./geo.js";
-import { filterByCategory } from "./filters.js";
+import { filterByCategory, filterByRadius, sortByDistance, pipe } from "./filters.js";
 import { markVisited, isVisited } from "./cache.js";
 import { withLogging } from "./proxy.js";
 import { throttle } from "./utils.js";
@@ -8,23 +8,42 @@ import { throttle } from "./utils.js";
 const PAGE_SIZE = 10;
 const ICONS = { park: "🌳", cafe: "☕", museum: "🏛️", restaurant: "🍽️" };
 
+// ---------- DOM ----------
 const listEl = document.getElementById("list");
 const sentinel = document.getElementById("sentinel");
 const statusEl = document.getElementById("status");
 const chipsEl = document.getElementById("chips");
+const radiusEl = document.getElementById("radius");
 const toTop = document.getElementById("toTop");
 
-
-const store = PlaceStore.getInstance();  
+// ---------- State ----------
+const store = PlaceStore.getInstance();
 let center = null;
-let activeFilter = filterByCategory("all"); 
+let category = "all";
+let radiusKm = Number(radiusEl.value);
 let observer = null;
+let finished = false;
+let locationLabel = "Location dhoond rahe hain…";
+
+const buildView = () =>
+  pipe(
+    filterByCategory(category),
+    filterByRadius(radiusKm)(center),
+    sortByDistance(center)
+  );
+
+function updateStatus() {
+  const count = listEl.children.length;
+  statusEl.textContent =
+    finished && count === 0
+      ? "😕 Koi place nahi mili"
+      : `${locationLabel} · ${count}`;
+}
 
 function renderPlace(place) {
   const card = document.createElement("article");
   card.className = "card" + (isVisited(place) ? " visited" : "");
   card.dataset.category = place.category;
-
   card.style.animationDelay = `${(listEl.children.length % PAGE_SIZE) * 45}ms`;
 
   const dist = place.distanceFrom(center.lat, center.lng).toFixed(1);
@@ -41,10 +60,10 @@ function renderPlace(place) {
     <span class="visited-tick">✓</span>`;
 
   card.addEventListener("click", () => {
-    markVisited(place);         
+    markVisited(place);
     card.classList.add("visited");
 
-    const logged = withLogging(place); 
+    const logged = withLogging(place);
     logged.name = place.name.replace(" ✓", "") + " ✓";
     card.querySelector("h3").textContent = place.name;
   });
@@ -52,43 +71,62 @@ function renderPlace(place) {
   listEl.appendChild(card);
 }
 
+function finish() {
+  finished = true;
+  observer?.disconnect();
+  sentinel.classList.add("done");
+  updateStatus();
+}
+
 function loadNext() {
+  const view = buildView();
   let added = 0;
-  let guard = 0;
 
-  while (added < PAGE_SIZE && guard++ < 20) {
+  while (added < PAGE_SIZE) {
     const batch = store.loadMore(PAGE_SIZE);
-
     if (batch.length === 0) {
-      observer.disconnect();
-      sentinel.classList.add("done");
-      statusEl.textContent = "Saari places load ho gayin";
+      finish();
       return;
     }
-
-    const matched = activeFilter(batch);
+    const matched = view(batch);
     matched.forEach(renderPlace);
     added += matched.length;
   }
+  updateStatus();
 }
 
 function startObserving() {
   observer?.disconnect();
-  observer = new IntersectionObserver(
+
+  const io = new IntersectionObserver(
     (entries) => {
-      if (entries[0].isIntersecting) loadNext();
+      if (!entries[0].isIntersecting) return;
+
+      loadNext();
+
+      if (!finished) {
+        io.unobserve(sentinel);
+        io.observe(sentinel);
+      }
     },
-    { rootMargin: "200px" } 
+    { rootMargin: "200px" }
   );
-  observer.observe(sentinel);
+
+  observer = io;
+  io.observe(sentinel);
 }
 
-function resetList() {
+
+function applyView() {
   listEl.innerHTML = "";
   sentinel.classList.remove("done");
-  store.reset(center);
+  finished = false;
+
+  buildView()(store.getAll()).forEach(renderPlace);
+  updateStatus();
   startObserving();
 }
+
 
 chipsEl.addEventListener("click", (e) => {
   const chip = e.target.closest(".chip");
@@ -98,9 +136,15 @@ chipsEl.addEventListener("click", (e) => {
     .querySelectorAll(".chip")
     .forEach((c) => c.classList.toggle("active", c === chip));
 
-  activeFilter = filterByCategory(chip.dataset.category); 
-  resetList();
+  category = chip.dataset.category;
+  applyView();
 });
+
+radiusEl.addEventListener("change", () => {
+  radiusKm = Number(radiusEl.value);
+  applyView();
+});
+
 
 window.addEventListener(
   "scroll",
@@ -114,12 +158,11 @@ toTop.addEventListener("click", () =>
 );
 
 (async function init() {
-  statusEl.textContent = "Location dhoond rahe hain…";
-  center = await getLocation(); // Geolocation API (fallback: Lahore)
+  statusEl.textContent = locationLabel;
+  center = await getLocation();
 
-  statusEl.textContent = center.fallback
-    ? "📍 Default location (Lahore)"
-    : "📍 Aapki location mil gayi";
+  locationLabel = center.fallback ? "📍 Lahore (default)" : "📍 Aapki location";
 
-  resetList();
+  store.reset(center);
+  applyView();
 })();
