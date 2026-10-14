@@ -1,4 +1,5 @@
-import { placeGenerator } from "./generator.js";
+import { generatePool, placeGenerator } from "./generator.js";
+import { sortByDistance } from "./filters.js";
 
 export const PlaceStore = (function () {
   let instance = null;
@@ -8,9 +9,11 @@ export const PlaceStore = (function () {
     let gen = null;
 
     return {
+      
       reset(center) {
         places.length = 0;
-        gen = placeGenerator(center);
+        const sortedPool = sortByDistance(center)(generatePool(center));
+        gen = placeGenerator(sortedPool);
       },
       loadMore(n = 10) {
         const batch = [];
